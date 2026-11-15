@@ -572,9 +572,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showChannel(channel: String) {
-        if (!menuFragment.isHidden) {
-            return
-        }
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
+    return
+}
+
 
         if (settingFragment.isVisible) {
             return
