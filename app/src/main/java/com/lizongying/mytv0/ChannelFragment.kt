@@ -19,7 +19,7 @@ class ChannelFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val handler = Handler()
-    private val delay: Long = 5000
+    private val delay: Long = 2000
     private var channel = 0
     private var channelCount = 0
 
