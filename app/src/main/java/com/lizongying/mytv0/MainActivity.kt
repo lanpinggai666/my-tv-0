@@ -814,6 +814,18 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    if (event.action == KeyEvent.ACTION_DOWN &&
+        event.keyCode in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9 &&
+        currentFocus !is android.widget.EditText
+    ) {
+        if (onKey(event.keyCode)) {
+            return true
+        }
+    }
+    return super.dispatchKeyEvent(event)
+}
+
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (onKey(keyCode)) {
