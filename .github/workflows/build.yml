@@ -1,4 +1,4 @@
-name: build-kitkat
+name: build-kitkat-release
 
 on:
   workflow_dispatch:
@@ -20,11 +20,19 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Build Debug APK
-        run: ./gradlew clean && ./gradlew assembleDebug
+      - name: Build Release APK
+        run: ./gradlew clean && ./gradlew assembleRelease
 
-      - name: Upload APK
+      - name: Align and Sign APK for Android 4.4
+        run: |
+          BUILD_TOOLS_DIR=$(ls -d "$ANDROID_HOME/build-tools/"* | sort -V | tail -n 1)
+          RAW_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          "$BUILD_TOOLS_DIR/zipalign" -f -p 4 "$RAW_APK" app-release-aligned.apk
+          keytool -genkeypair -v -keystore release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias mytv -storepass 123456 -keypass 123456 -dname "CN=mytv"
+          "$BUILD_TOOLS_DIR/apksigner" sign --ks release.jks --ks-key-alias mytv --ks-pass pass:123456 --key-pass pass:123456 --v1-signing-enabled true --v2-signing-enabled true --out my-tv-0-kitkat-release.apk app-release-aligned.apk
+
+      - name: Upload Signed Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-tv-0-kitkat-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: my-tv-0-kitkat-release
+          path: my-tv-0-kitkat-release.apk
